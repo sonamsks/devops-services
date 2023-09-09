@@ -21,8 +21,9 @@ jobs:
 
     - name: Commit changes
       run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
+        git config --local user.email "sonamsks9286@gmail.com"
+        git config --local user.name "Sonam Kumar Singh"
         git add .nvmrc
         git commit -m "Bump Node.js version to $NEW_VERSION" || echo "No changes to commit"
         git push
+
