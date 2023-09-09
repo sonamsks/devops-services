@@ -1,4 +1,4 @@
-name: Bump Node.js Version
+name: Bump Node.js version on master
 
 on:
   push:
@@ -6,24 +6,26 @@ on:
       - master
 
 jobs:
-  bump-node-version:
+  bump-version:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
+    - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Bump Node.js version in .nvmrc
-      run: |
-        CURRENT_VERSION=$(cat .nvmrc)
-        NEW_VERSION=$(npx semver $CURRENT_VERSION -i minor)
-        echo $NEW_VERSION > .nvmrc
+    - name: Use Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14' # or whichever version you want to use
 
-    - name: Commit changes
-      run: |
-        git config --local user.email "sonamsks9286@gmail.com"
-        git config --local user.name "Sonam Kumar Singh"
-        git add .nvmrc
-        git commit -m "Bump Node.js version to $NEW_VERSION" || echo "No changes to commit"
-        git push
+    - name: Install dependencies
+      run: npm install
 
+    - name: Bump version
+      run: npm version patch -m "Bump version to %s [skip ci]" 
+
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: ${{ github.ref }}
