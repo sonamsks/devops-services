@@ -3,6 +3,8 @@
 
 // web server framework for Node.js applications
 const express = require("express");
+const axios = require('axios');
+
 // allows requests from web pages hosted on other domains
 const cors = require("cors");
 const { v4: uuidv4 } = require("uuid");
@@ -18,18 +20,39 @@ app.use(express.json());
 app.use(cors());
 
 /** add reqId to api call */
+
+
+
 app.use(function (req, res, next) {
   res.locals.reqId = uuidv4();
   next();
 });
 
-app.post("/add-sub", (req, res) => {
+app.post("/add-sub",async (req, res) => {
   const {a=0, b=0} = req.body;
   console.log(`A: ${a}, B: ${b}`);
 
-  //////////////////////////////////////
+
+
+//////////////////////////////////////
   // Your logic to call S1 and S2 services to get the addition and subtraction
   //////////////////////////////////////
+    try {
+    const addResponse = await axios.post('http://devops-services-s1-1:8081/add', { a, b });
+    const subResponse = await axios.post('http://devops-services-s2-1:8082/sub', { a, b });
+
+    const sum = addResponse.data.body.sum;
+    const difference = subResponse.data.body.sum;  // Note: Consider renaming 'sum' to 'difference' in the subtraction API for clarity
+
+    res.status(200).send({
+      sum: sum,
+      difference: difference
+    });
+
+  } catch (error) {
+    console.error('Error fetching from S1 or S2:', error.message);
+    res.status(500).send({ error: 'Failed to get data from S1 or S2 services' });
+  }
 
 });
 
