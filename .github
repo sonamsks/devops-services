@@ -1,0 +1,28 @@
+name: Bump Node.js Version
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  bump-node-version:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Bump Node.js version in .nvmrc
+      run: |
+        CURRENT_VERSION=$(cat .nvmrc)
+        NEW_VERSION=$(npx semver $CURRENT_VERSION -i minor)
+        echo $NEW_VERSION > .nvmrc
+
+    - name: Commit changes
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add .nvmrc
+        git commit -m "Bump Node.js version to $NEW_VERSION" || echo "No changes to commit"
+        git push
