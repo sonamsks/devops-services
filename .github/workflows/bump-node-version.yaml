@@ -26,4 +26,3 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           version_bump_type: ${{ github.event.inputs.version_bump_type }}
-          version_metadata_path: s3/package.json
